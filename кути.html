@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Домашнє завдання: кути та прямі</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<script>
+const ACCESS_KEY = "0de96a44-867d-4c4d-88af-4287996adca5";
+const TITLE = "Кути та прямі";
+
+/* Завдання. Варіант фіксований: порядок і числа не змінюються.
+   type: "choice" — вибір відповіді; "number" — введення числа.
+   fig (необов’язково):
+     {kind:"angle", deg, rot} — один кут;
+     {kind:"cross", phi, rot, marks} — дві прямі, що перетинаються: кути 1 (ліворуч), 2 (вгорі), 3 (праворуч), 4 (внизу); ∠1 = ∠3 = phi;
+     {kind:"lines"} — прямі a, b, c, d (a ∥ b, c ⊥ a, d — похила);
+     {kind:"dist"} — точка A, пряма a, відрізки AB (перпендикуляр), AC, AD. */
+const TASKS = [
+  { topic:"Вид кута", type:"choice", q:"Який це кут?", fig:{kind:"angle",deg:128,rot:12},
+    options:["Гострий","Прямий","Тупий","Розгорнутий"], answer:"Тупий",
+    explain:"Цей кут дорівнює 128°. Тупий кут більший за 90°, але менший за 180°." },
+  { topic:"Вид кута", type:"choice", q:"Який це кут?", fig:{kind:"angle",deg:42,rot:25},
+    options:["Гострий","Прямий","Тупий","Розгорнутий"], answer:"Гострий",
+    explain:"Цей кут дорівнює 42°. Гострий кут менший за 90°." },
+  { topic:"Вид кута", type:"choice", q:"Який це кут?", fig:{kind:"angle",deg:90,rot:-20},
+    options:["Гострий","Прямий","Тупий","Розгорнутий"], answer:"Прямий",
+    explain:"Квадратик біля вершини позначає прямий кут: він дорівнює 90°." },
+  { topic:"Вид кута", type:"choice", q:"Який це кут?", fig:{kind:"angle",deg:180,rot:8},
+    options:["Гострий","Прямий","Тупий","Розгорнутий"], answer:"Розгорнутий",
+    explain:"Сторони кута утворюють пряму. Такий кут називають розгорнутим, він дорівнює 180°." },
+  { topic:"Вертикальні чи суміжні", type:"choice", q:"Кути 2 і 4 — це…",
+    fig:{kind:"cross",phi:70,rot:10,marks:{2:{cls:"s1"},4:{cls:"s2"}}},
+    options:["Вертикальні","Суміжні"], answer:"Вертикальні",
+    explain:"Кути 2 і 4 лежать навпроти один одного: сторони одного є продовженнями сторін іншого. Тому вони вертикальні й рівні." },
+  { topic:"Вертикальні чи суміжні", type:"choice", q:"Кути 1 і 2 — це…",
+    fig:{kind:"cross",phi:110,rot:-15,marks:{1:{cls:"s1"},2:{cls:"s2"}}},
+    options:["Вертикальні","Суміжні"], answer:"Суміжні",
+    explain:"Кути 1 і 2 мають спільну сторону, а дві інші сторони утворюють пряму. Тому вони суміжні, їхня сума 180°." },
+  { topic:"Знайди кут", type:"number", q:"∠1 = 58°. Знайди ∠3.", label:"∠3 =", unit:"°", answer:58,
+    fig:{kind:"cross",phi:58,rot:8,marks:{1:{cls:"s1",text:"58°"},3:{cls:"s2",text:"?"}}},
+    explain:"∠1 і ∠3 вертикальні, тому вони рівні: ∠3 = 58°." },
+  { topic:"Знайди кут", type:"number", q:"∠2 = 134°. Знайди ∠3.", label:"∠3 =", unit:"°", answer:46,
+    fig:{kind:"cross",phi:46,rot:-10,marks:{2:{cls:"s1",text:"134°"},3:{cls:"s2",text:"?"}}},
+    explain:"∠2 і ∠3 суміжні, тому ∠3 = 180° − 134° = 46°." },
+  { topic:"Знайди кут", type:"number", q:"∠1 = 73°. Знайди ∠4.", label:"∠4 =", unit:"°", answer:107,
+    fig:{kind:"cross",phi:73,rot:5,marks:{1:{cls:"s1",text:"73°"},4:{cls:"s2",text:"?"}}},
+    explain:"∠1 і ∠4 суміжні, тому ∠4 = 180° − 73° = 107°." },
+  { topic:"Паралельні прямі", type:"choice", q:"Яка пряма паралельна прямій a?", fig:{kind:"lines"},
+    options:["b","c","d"], answer:"b",
+    explain:"Прямі a і b не перетинаються, скільки б ми їх не продовжували. Отже, a ∥ b." },
+  { topic:"Перпендикулярні прямі", type:"choice", q:"Яка пряма перпендикулярна до прямої a?", fig:{kind:"lines"},
+    options:["b","c","d"], answer:"c",
+    explain:"Пряма c перетинає пряму a під прямим кутом (90°). Отже, c ⊥ a. Пряма d перетинає a, але не під прямим кутом." },
+  { topic:"Перпендикулярні прямі", type:"choice", q:"Прямі a і b перетинаються під кутом 90°. Як називають такі прямі?",
+    options:["Паралельні","Перпендикулярні","Вертикальні","Суміжні"], answer:"Перпендикулярні",
+    explain:"Прямі, які перетинаються під прямим кутом, називають перпендикулярними: a ⊥ b." },
+  { topic:"Паралельні прямі", type:"choice", q:"Прямі m і n перпендикулярні до прямої k. Як розміщені прямі m і n?",
+    options:["Перетинаються","Паралельні","Перпендикулярні","Збігаються"], answer:"Паралельні",
+    explain:"Дві прямі, перпендикулярні до третьої прямої, паралельні між собою: m ∥ n." },
+  { topic:"Відстань від точки до прямої", type:"choice", q:"Довжина якого відрізка є відстанню від точки A до прямої a?", fig:{kind:"dist"},
+    options:["AB","AC","AD"], answer:"AB",
+    explain:"Відстань від точки до прямої — це довжина перпендикуляра. AB ⊥ a, а AC і AD — похилі, вони довші за AB." },
+  { topic:"Паралельні прямі", type:"choice", q:"Скільки спільних точок мають дві паралельні прямі?",
+    options:["Жодної","Одну","Дві","Безліч"], answer:"Жодної",
+    explain:"Паралельні прямі не перетинаються, тому спільних точок у них немає." }
+];
+/* ======================================================== */
+</script>
+<style>
+:root{
+  --paper:#fbfdff; --grid:#d6e4f5; --margin:#e88b8b; --ink:#1f3f7a; --text:#22303f; --muted:#5b6b7d;
+  --pencil:#f2b705; --pencil-soft:rgba(242,183,5,.35); --sky:#3d8bd9; --sky-soft:rgba(61,139,217,.28);
+  --ok:#2e8b57; --ok-soft:#e3f4ea; --bad:#d2412f; --bad-soft:#fbe7e4; --card:#ffffff; --line:#c9d6e6;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#16202e; --grid:#22324a; --margin:#8a4a4a; --ink:#9cc3ff; --text:#e6edf6; --muted:#a3b2c4;
+    --pencil:#f5c84a; --pencil-soft:rgba(245,200,74,.3); --sky:#6aaef0; --sky-soft:rgba(106,174,240,.3);
+    --ok:#5cc98a; --ok-soft:#1d3a2b; --bad:#ff7a66; --bad-soft:#40211d; --card:#1c2838; --line:#33465f;
+    color-scheme:dark;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;min-height:100vh;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font-family:"Caveat","Comic Sans MS",cursive;font-size:clamp(2.4rem,9vw,3.2rem);line-height:1;margin:8px 0 4px;color:var(--ink)}
+.sub{margin:0 0 18px;color:var(--muted)}
+.sheet{position:relative;background:var(--card);border:1px solid var(--line);border-radius:6px 14px 14px 6px;padding:18px 18px 22px 34px;box-shadow:3px 4px 0 var(--grid)}
+.sheet::before{content:"";position:absolute;left:20px;top:0;bottom:0;width:2px;background:var(--margin);opacity:.7}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.count{font-weight:800;color:var(--muted);font-size:.95rem}
+.topic{font-weight:800;color:var(--ink);font-size:.95rem}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--line)}
+.dot.ok{background:var(--ok);border-color:var(--ok)} .dot.bad{background:var(--bad);border-color:var(--bad)} .dot.now{border-color:var(--ink)}
+figure{margin:6px 0 4px;display:flex;justify-content:center}
+svg.fig{width:100%;max-width:300px;height:auto;overflow:visible}
+.fig .ln{stroke:var(--text);stroke-width:3;stroke-linecap:round} .fig .vx{fill:var(--text)}
+.fig .lbl{fill:var(--text);font:800 17px "Nunito",sans-serif;text-anchor:middle;dominant-baseline:central}
+.fig .arc{fill:none;stroke:var(--ink);stroke-width:2}
+.fig .s1{fill:var(--pencil-soft);stroke:var(--pencil);stroke-width:2} .fig .s2{fill:var(--sky-soft);stroke:var(--sky);stroke-width:2}
+.q{font-size:1.15rem;font-weight:700;margin:8px 0 12px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{font:inherit;font-weight:700;font-size:1.02rem;padding:12px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)} .opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.inrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.inrow label{font-weight:800;font-size:1.1rem}
+input[type=text]{font:inherit;font-size:1.15rem;font-weight:800;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--text)}
+input.num{width:110px} input.name{width:100%;max-width:360px}
+input.right{border-color:var(--ok)} input.wrong{border-color:var(--bad)}
+.btn{font:inherit;font-weight:800;font-size:1rem;padding:11px 18px;border-radius:12px;border:0;background:var(--ink);color:var(--card);cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible{outline:3px solid var(--pencil);outline-offset:2px}
+.fb{margin-top:14px;padding:12px 14px;border-radius:12px}
+.fb.ok{background:var(--ok-soft);border-left:5px solid var(--ok)} .fb.bad{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.fb strong{display:block;font-size:1.05rem} .fb.ok strong{color:var(--ok)} .fb.bad strong{color:var(--bad)}
+.next{margin-top:14px}
+.result{text-align:center}
+.big{font-family:"Caveat","Comic Sans MS",cursive;font-size:4rem;line-height:1;color:var(--ink);margin:6px 0}
+.status{margin:14px auto 0;padding:10px 14px;border-radius:12px;max-width:440px;font-weight:700}
+.status.ok{background:var(--ok-soft);color:var(--ok)} .status.bad{background:var(--bad-soft);color:var(--bad)} .status.wait{color:var(--muted)}
+.review{text-align:left;margin-top:18px;padding:0;list-style:none}
+.review li{padding:8px 0;border-top:1px dashed var(--line)}
+.hint{color:var(--muted);font-size:.95rem}
+@media (max-width:380px){.opts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="h1"></h1>
+  <p class="sub">Домашнє завдання. Після кожної відповіді побачиш пояснення, а результат автоматично надійде вчительці.</p>
+  <main class="sheet" id="sheet" aria-live="polite"></main>
+</div>
+<script>
+document.getElementById("h1").textContent = TITLE;
+document.title = "ДЗ: " + TITLE;
+const sheet = document.getElementById("sheet");
+const st = { name:"", i:0, answers:[], start:null };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---- рисунки ---- */
+const P=(r,d)=>{const t=d*Math.PI/180;return [r*Math.cos(t),-r*Math.sin(t)];};
+const f=n=>n.toFixed(1);
+function sector(r,a1,a2,cls){const [x1,y1]=P(r,a1),[x2,y2]=P(r,a2);const L=((a2-a1+360)%360)>180?1:0;return `<path class="${cls}" d="M0 0 L${f(x1)} ${f(y1)} A${r} ${r} 0 ${L} 0 ${f(x2)} ${f(y2)} Z"/>`;}
+function arc(r,a1,a2){const [x1,y1]=P(r,a1),[x2,y2]=P(r,a2);const L=((a2-a1+360)%360)>180?1:0;return `<path class="arc" d="M${f(x1)} ${f(y1)} A${r} ${r} 0 ${L} 0 ${f(x2)} ${f(y2)}"/>`;}
+function ray(d,len=120){const [x,y]=P(len,d);return `<line class="ln" x1="0" y1="0" x2="${f(x)}" y2="${f(y)}"/>`;}
+function label(t,d,r){const [x,y]=P(r,d);return `<text class="lbl" x="${f(x)}" y="${f(y)}">${esc(t)}</text>`;}
+function angleFig({deg,rot}){
+  let mark;
+  if(deg===90){const [ux,uy]=P(18,rot),[vx,vy]=P(18,rot+90);mark=`<path class="arc" d="M${f(ux)} ${f(uy)} L${f(ux+vx)} ${f(uy+vy)} L${f(vx)} ${f(vy)}"/>`;}
+  else mark=arc(30,rot,rot+deg);
+  const pts=[[0,0],P(120,rot),P(120,rot+deg)],xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),pad=24;
+  let x0=Math.min(...xs)-pad,x1=Math.max(...xs)+pad,y0=Math.min(...ys)-pad,y1=Math.max(...ys)+pad;
+  if(y1-y0<110){const c=(y0+y1)/2;y0=c-55;y1=c+55;}
+  return `<svg class="fig" viewBox="${f(x0)} ${f(y0)} ${f(x1-x0)} ${f(y1-y0)}" role="img" aria-label="Кут">${ray(rot)}${ray(rot+deg)}${mark}<circle class="vx" r="4"/></svg>`;
+}
+function crossFig({phi,rot,marks={}}){
+  const b=[rot-phi/2,rot+phi/2,rot+180-phi/2,rot+180+phi/2];
+  const reg={3:[b[0],b[1]],2:[b[1],b[2]],1:[b[2],b[3]],4:[b[3],b[0]+360]};
+  const mid={3:rot,2:rot+90,1:rot+180,4:rot+270};
+  let s="",l="";
+  for(const k of [1,2,3,4]){const m=marks[k]||{};if(m.cls)s+=sector(34,reg[k][0],reg[k][1],m.cls);
+    const size=k%2?phi:180-phi;l+=label(m.text??k,mid[k],size<45?74:58);}
+  const line=(a,c)=>{const [x1,y1]=P(130,a),[x2,y2]=P(130,c);return `<line class="ln" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}"/>`;};
+  return `<svg class="fig" viewBox="-140 -105 280 210" role="img" aria-label="Дві прямі, що перетинаються">${s}${line(b[2],b[0])}${line(b[3],b[1])}<circle class="vx" r="4"/>${l}</svg>`;
+}
+function seg(x1,y1,x2,y2,w=3,dash=""){return `<line class="ln" style="stroke-width:${w}${dash?";stroke-dasharray:"+dash:""}" x1="${f(x1)}" y1="${f(-y1)}" x2="${f(x2)}" y2="${f(-y2)}"/>`;}
+function txt(t,x,y){return `<text class="lbl" style="font-style:italic" x="${f(x)}" y="${f(-y)}">${esc(t)}</text>`;}
+function linesFig(){
+  const L=[{l:"a",p:[0,32],d:15,h:135},{l:"b",p:[0,-38],d:15,h:135},{l:"c",p:[-62,0],d:105,h:92},{l:"d",p:[58,0],d:62,h:95}];
+  let s="";
+  for(const o of L){const r=o.d*Math.PI/180,ux=Math.cos(r),uy=Math.sin(r);
+    s+=seg(o.p[0]-ux*o.h,o.p[1]-uy*o.h,o.p[0]+ux*o.h,o.p[1]+uy*o.h);
+    s+=txt(o.l,o.p[0]+ux*(o.h+14),o.p[1]+uy*(o.h+14));}
+  return `<svg class="fig" viewBox="-160 -120 320 240" role="img" aria-label="Прямі a, b, c, d">${s}</svg>`;
+}
+function distFig(){
+  let s=seg(-140,-40,140,-40)+txt("a",150,-40);
+  s+=seg(0,60,0,-40,3)+seg(0,60,80,-40,2)+seg(0,60,-100,-40,2);
+  s+=`<path class="arc" d="M12 40 L12 28 L0 28" transform="translate(0,0)"/>`;
+  for(const [n,x,y,dx,dy] of [["A",0,60,-14,10],["B",0,-40,-12,-16],["C",80,-40,8,-16],["D",-100,-40,-8,-16]])
+    s+=`<circle class="vx" cx="${x}" cy="${-y}" r="4"/>`+txt(n,x+dx,y+dy);
+  return `<svg class="fig" viewBox="-130 -85 300 150" role="img" aria-label="Точка A і пряма a">${s}</svg>`;
+}
+const figure = t => { if(!t.fig) return ""; const k=t.fig.kind;
+  return `<figure>${k==="angle"?angleFig(t.fig):k==="cross"?crossFig(t.fig):k==="lines"?linesFig():distFig()}</figure>`; };
+
+/* ---- екрани ---- */
+function dots(cur){let h='<div class="dots" aria-hidden="true">';
+  TASKS.forEach((_,i)=>{const a=st.answers[i];h+=`<span class="dot ${a?(a.ok?"ok":"bad"):(i===cur?"now":"")}"></span>`;});return h+"</div>";}
+
+function startScreen(){
+  sheet.innerHTML=`<p class="q">Напиши своє ім’я та прізвище, щоб учителька побачила, чия це робота.</p>
+    <div class="inrow"><input id="nm" class="name" type="text" autocomplete="name" placeholder="Ім’я та прізвище" aria-label="Ім’я та прізвище"></div>
+    <p class="hint">Завдань: ${TASKS.length}. На кожне — одна спроба, тож подумай перед відповіддю.</p>
+    <button class="btn" id="go" disabled>Почати</button>`;
+  const nm=document.getElementById("nm"),go=document.getElementById("go");
+  nm.addEventListener("input",()=>go.disabled=nm.value.trim().length<2);
+  nm.addEventListener("keydown",e=>{if(e.key==="Enter"&&!go.disabled)go.click();});
+  go.addEventListener("click",()=>{st.name=nm.value.trim();st.start=Date.now();render();});
+  nm.focus({preventScroll:true});
+}
+
+function render(){
+  if(st.i>=TASKS.length){finishScreen();return;}
+  const t=TASKS[st.i];
+  let h=`<div class="top"><span class="count">Завдання ${st.i+1} з ${TASKS.length}</span>${dots(st.i)}</div>
+    <div class="topic">${esc(t.topic)}</div>${figure(t)}<p class="q">${esc(t.q)}</p>`;
+  if(t.type==="choice") h+=`<div class="opts">${t.options.map(o=>`<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+  else h+=`<div class="inrow"><label for="ans">${esc(t.label)}</label><input id="ans" class="num" type="text" inputmode="decimal" autocomplete="off" aria-label="Відповідь">${t.unit?`<span style="font-weight:800">${esc(t.unit)}</span>`:""}<button class="btn" id="check">Перевірити</button></div>`;
+  h+=`<div id="fb"></div>`;
+  sheet.innerHTML=h;
+  if(t.type==="choice"){
+    sheet.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>{
+      const ok=b.dataset.v===t.answer;
+      sheet.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(x.dataset.v===t.answer)x.classList.add("right");});
+      if(!ok)b.classList.add("wrong");
+      done(ok,b.dataset.v);
+    }));
+  } else {
+    const inp=document.getElementById("ans"),chk=document.getElementById("check");
+    const go=()=>{const raw=inp.value.trim().replace(",",".").replace("°","");
+      if(raw===""||isNaN(Number(raw))){inp.placeholder="число";inp.focus();return;}
+      const ok=Math.abs(Number(raw)-t.answer)<1e-9;
+      inp.disabled=true;chk.disabled=true;inp.classList.add(ok?"right":"wrong");
+      done(ok,inp.value.trim());};
+    chk.addEventListener("click",go);
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+    inp.focus({preventScroll:true});
+  }
+}
+
+function done(ok,given){
+  const t=TASKS[st.i];
+  st.answers[st.i]={ok,given};
+  const right=t.type==="number"?`${t.answer}${t.unit==="°"?"°":t.unit?" "+t.unit:""}`:t.answer;
+  document.getElementById("fb").innerHTML=`<div class="fb ${ok?"ok":"bad"}"><strong>${ok?"Правильно!":"Не зовсім."}</strong>${ok?"":"Правильна відповідь: "+esc(right)+". "}${esc(t.explain)}</div>
+    <button class="btn next" id="next">${st.i===TASKS.length-1?"Завершити":"Далі"}</button>`;
+  sheet.querySelector(".dots").outerHTML=dots(-1);
+  const nx=document.getElementById("next");nx.focus({preventScroll:true});
+  nx.addEventListener("click",()=>{st.i++;render();window.scrollTo({top:0,behavior:"smooth"});});
+}
+
+function report(score,mins){
+  const lines=TASKS.map((t,i)=>{const a=st.answers[i];
+    const right=t.type==="number"?t.answer:t.answer;
+    return `${i+1}. ${t.topic} — ${t.q}\n   Відповідь: ${a.given} ${a.ok?"✅":"❌ (правильно: "+right+")"}`;});
+  return {score:`${score} з ${TASKS.length}`,time:`${mins} хв`,details:lines.join("\n")};
+}
+
+async function send(score,mins){
+  const box=document.getElementById("status");
+  if(!ACCESS_KEY||ACCESS_KEY.startsWith("ВСТАВТЕ")){box.className="status bad";box.textContent="Надсилання не налаштоване: учителька ще не додала ключ. Зроби знімок екрана з результатом і надішли їй.";return;}
+  box.className="status wait";box.textContent="Надсилаю результат учительці…";
+  const r=report(score,mins);
+  try{
+    const res=await fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+      body:JSON.stringify({access_key:ACCESS_KEY,subject:`ДЗ «${TITLE}»: ${st.name} — ${r.score}`,from_name:"Домашнє завдання",
+        "Учень":st.name,"Результат":r.score,"Час виконання":r.time,"Відповіді":r.details})});
+    const j=await res.json().catch(()=>({}));
+    if(res.ok&&j.success!==false){box.className="status ok";box.textContent="✓ Результат надіслано вчительці.";}
+    else throw new Error(j.message||res.status);
+  }catch(e){
+    box.className="status bad";box.innerHTML=`Не вдалося надіслати результат. Перевір інтернет і натисни кнопку ще раз.<br><button class="btn" id="retry" style="margin-top:10px">Надіслати ще раз</button>`;
+    document.getElementById("retry").addEventListener("click",()=>send(score,mins));
+  }
+}
+
+function finishScreen(){
+  const score=st.answers.filter(a=>a.ok).length;
+  const mins=Math.max(1,Math.round((Date.now()-st.start)/60000));
+  const msg=score===TASKS.length?"Чудово! Усе правильно.":score>=TASKS.length*0.75?"Добре! Переглянь помилки нижче.":"Переглянь пояснення до помилок нижче — розберемо їх на занятті.";
+  sheet.innerHTML=`<div class="result"><div class="top" style="justify-content:center">${dots(-1)}</div>
+    <p style="margin:6px 0 0;font-weight:800">${esc(st.name)}</p>
+    <div class="big">${score} з ${TASKS.length}</div><p>${msg}</p><div id="status" class="status"></div></div>
+    <ul class="review">${TASKS.map((t,i)=>{const a=st.answers[i];return `<li>${a.ok?"✅":"❌"} <b>${i+1}.</b> ${esc(t.q)}<br><span class="hint">Твоя відповідь: ${esc(a.given)}${a.ok?"":` · правильно: ${esc(t.answer)}`}</span></li>`;}).join("")}</ul>`;
+  send(score,mins);
+}
+startScreen();
+</script>
+</body>
+</html>
